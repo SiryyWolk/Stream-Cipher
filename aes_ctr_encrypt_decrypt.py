@@ -20,10 +20,13 @@ plaintext = "Hello World! I'm Sam potter bridgets"
 plaintext_bytes = bytes(plaintext, "utf-8")
 print("Plaintext: " + plaintext)
 
+
 ciphertext_bytes = aes_ctr_encryptor.update(plaintext_bytes) + aes_ctr_encryptor.finalize()
 ciphertext = ciphertext_bytes.hex()
-print("Ciphertext: " + ciphertext)
+after = time.perf_counter()
+
 
 plaintext_bytes_2 = aes_ctr_decryptor.update(ciphertext_bytes) + aes_ctr_decryptor.finalize()
 plaintext_2 = str(plaintext_bytes_2, "utf-8")
 print("Original Plaintext: " + plaintext_2)
+
