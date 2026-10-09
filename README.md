@@ -1,49 +1,57 @@
 # Stream Cipher Playground
 
-This project is a beginner-friendly collection of Python examples that show how stream ciphers work in practice. I built it to learn the basics of encryption, understand how different ciphers behave, and see how the same idea can be implemented in multiple ways.
+This repository is a small, beginner-friendly set of Python scripts for exploring how stream ciphers work in practice. It is designed to help someone understand the basics of keystream generation, nonce usage, encryption, and decryption by reading real code instead of only theory.
 
-A stream cipher encrypts data bit by bit or byte by byte using a keystream. The same keystream is used to decrypt the message, so both sides must share the same key and nonce (when needed).
-
-This repository includes simple demonstrations for:
+The project demonstrates several common ciphers and modes:
 
 - RC4
 - ChaCha20
 - AES in CTR mode
 
-These are educational examples, not production-ready cryptography code.
+These scripts are meant for learning and experimentation. They are not production-ready cryptography implementations.
 
-## Why this project matters
+## Why this project exists
 
-When you are learning cyber security or cryptography, it helps to see the actual code behind the theory. Instead of only reading about encryption, this project shows:
+When learning cryptography, it helps to see:
 
-- what a key looks like
-- how a nonce is used
-- how ciphertext is generated
-- how the same process reverses during decryption
-- why some older ciphers are considered unsafe
+- what a key and nonce look like in code
+- how ciphertext is created from plaintext
+- how the same keystream is reused during decryption
+- why older ciphers like RC4 are considered unsafe
+- how a block cipher can behave like a stream cipher when used in CTR mode
 
-## Project files
+## Repository overview
 
-- `rc4_decryptor.py` — decrypts a sample RC4 ciphertext using a known key
-- `chacha20_decryptor.py` — decrypts a sample ChaCha20 ciphertext
-- `chacha20_encrypt_decrypt.py` — generates a fresh ChaCha20 key and nonce, then encrypts and decrypts text
+The project currently contains these examples:
+
+- `rc4_encrypt_decrypt.py` — encrypts and decrypts a short string using RC4/ARC4
+- `rc4_decryptor.py` — decrypts a known RC4 ciphertext with a fixed key
+- `chacha20_encryptor.py` — decrypts a known ChaCha20 ciphertext using a supplied key and nonce
+- `chacha20_encrypt_decrypt.py` — generates a ChaCha20 key/nonce and performs encryption and decryption
+- `chacha20_decrypt_experimental.py` — an experimental ChaCha20-oriented script for testing variations
 - `aes_ctr_encrypt_decrypt.py` — shows AES in CTR mode, which acts like a stream cipher
 
 ## Getting started
 
-Make sure Python is installed, then install the crypto library used in the examples:
+Make sure Python is installed, then create and activate a virtual environment:
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
+```
+
+Install the required dependency:
+
+```bash
 pip install cryptography
 ```
 
-Now run any example:
+Run any script from the repository root:
 
 ```bash
+python rc4_encrypt_decrypt.py
 python rc4_decryptor.py
-python chacha20_decryptor.py
+python chacha20_encryptor.py
 python chacha20_encrypt_decrypt.py
 python aes_ctr_encrypt_decrypt.py
 ```
@@ -52,66 +60,58 @@ python aes_ctr_encrypt_decrypt.py
 
 ### 1. Stream cipher
 
-A stream cipher creates a pseudo-random stream of bytes from a secret key. It combines that stream with the plaintext to produce ciphertext. Decryption uses the same stream again to recover the original message.
+A stream cipher generates a pseudo-random keystream from a secret key. That keystream is combined with plaintext to produce ciphertext, and the same keystream is used again during decryption.
 
-Think of it like this:
+The simplest mental model is:
 
 ```text
 ciphertext = plaintext XOR keystream
 plaintext = ciphertext XOR keystream
 ```
 
-The `XOR` operation is the heart of many stream ciphers.
+The `XOR` operation is the core idea behind many stream ciphers.
 
 ### 2. RC4
 
-RC4 is one of the oldest stream ciphers. It was widely used in the past, but it is now considered insecure and should not be used in modern systems.
-
-This project includes it as a historical example so beginners can see how older ciphers worked and why they were later replaced.
+RC4 is one of the oldest stream ciphers. It was once widely used, but it is now considered broken and insecure. This repository includes RC4 as a historical example so beginners can see how old implementations behaved and why modern crypto moved away from them.
 
 ### 3. ChaCha20
 
-ChaCha20 is a modern stream cipher that is much more secure than RC4. It is fast, efficient, and commonly used in real-world systems.
-
-This project demonstrates both:
-
-- decryption with a known key and nonce
-- a full encrypt/decrypt example using a fresh key
+ChaCha20 is a modern stream cipher that is much more secure than RC4. It is fast, efficient, and used in modern cryptographic systems. This project demonstrates both decryption from a fixed example and a simple complete encrypt/decrypt flow.
 
 ### 4. AES in CTR mode
 
-AES is normally a block cipher, but in CTR mode it can behave like a stream cipher. Instead of encrypting blocks of the message directly, it encrypts a counter and uses the result as a keystream.
+AES is normally a block cipher, but in CTR mode it can be used like a stream cipher. Instead of directly encrypting the message, it encrypts a counter value and uses that output as a keystream. This is a good example of how the same primitive can be repurposed for different modes.
 
-This shows an important idea in cryptography: the same primitive can be used in different modes to support different behaviors.
+## Example output
 
-## What the output looks like
-
-When you run `rc4_decryptor.py`, you should see a plaintext similar to:
+Running `rc4_decryptor.py` or `rc4_encrypt_decrypt.py` should print values similar to:
 
 ```text
-You should not use RC4 in real-world applications!
+Key: mykey
+Plaintext: someplaintext
+Ciphertext: 6a4d3f...
+Original Plaintext: someplaintext
 ```
 
-That shows the ciphertext can be reversed back into readable text when the correct key is used.
+This shows the ciphertext can be transformed back into readable text when the same key is used.
 
 ## Important security note
 
-These scripts are designed for learning and experiments. They are not secure enough for real-world production use for several reasons:
+These scripts are educational and are intentionally kept simple for readability. They are not appropriate for real-world security use because:
 
-- RC4 is broken and deprecated
-- fixed keys and sample ciphertexts are used in examples
-- nonce and key handling is simplified for readability
-- there is no authentication or integrity check
+- RC4 is deprecated and broken
+- fixed keys and demo ciphertexts are used
+- nonce handling is simplified for learning
+- there is no authentication or integrity protection
 
 For real applications, use modern authenticated encryption such as:
 
 - AES-GCM
 - ChaCha20-Poly1305
 
-## My learning goal
+## Learning goal
 
-This repository reflects my work as I study cryptography from the ground up. It is meant to be easy for beginners to read, easy to run, and helpful for understanding how stream ciphers work in code.
+This project is meant to be easy to read, easy to run, and useful for building intuition about how stream ciphers work in code. If you are new to cryptography, start with the smallest script, read the comments carefully, and then modify the key, nonce, or plaintext to see how the output changes.
 
-If you are new to cryptography, start with the smallest file and read the comments carefully. Then try changing the key, nonce, or message and observe what happens.
-
-That is one of the best ways to learn.
+That hands-on experimentation is usually the fastest way to learn.
